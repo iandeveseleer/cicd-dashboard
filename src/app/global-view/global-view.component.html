@@ -1,0 +1,72 @@
+<mat-card class="project">
+  <mat-card-content>
+    @if(loaded) {
+      @for (project of projects ; track project.id) {
+        @for(version of project.versions ; track version.id) {
+              <section>
+                <div class="project-name">
+                  @if (project?.repositoryUrl) {
+                    <a [href]="project.repositoryUrl" target="_blank" rel="noopener noreferrer" matTooltip="Go to repository">
+                      <mat-icon>folder_code</mat-icon>
+                    </a>
+                  }
+                  <div matBadge="v{{ version.version}}" matBadgeOverlap="false">
+                    <a [routerLink]="['/projects', project.id, 'version', version.id]" matTooltip="Go to detailled view">{{ project.name }}</a>
+                  </div>
+                </div>
+                <div class="jobs">
+                  @if(version?.pipelines && version.pipelines.length > 0) {
+                    @if(version?.pipelines?.[0]?.jobs && version.pipelines[0].jobs.length > 0) {
+                      @for (job of version.pipelines[0].jobs; track $index) {
+                        <ng-template #stepDetailsTpl>
+                          <strong>{{ job.name }}</strong>
+                          @if(job.startDate) {
+                            @if(job.endDate) {
+                              <p>Duration: <strong>{{ job.endDate | durationBetweenInMinutes: job.startDate }}</strong></p>
+                            } @else {
+                              <p>On going</p>
+                            }
+                          }
+                          @if (job.details) {
+                            <div class="job-details">
+                              @if (job.details.codeQuality !== undefined) {
+                                @if (job.details.codeQuality.coverage !== undefined) {
+                                  <p>Coverage: <strong>{{ job.details.codeQuality.coverage }}</strong></p>
+                                }
+                                @if (job.details.codeQuality.duplications !== undefined) {
+                                  <p><strong>{{ job.details.codeQuality.duplications }}</strong> duplications</p>
+                                }
+                              }
+                              @if (job.details.testResults !== undefined) {
+                                <p>Tests:
+                                  @if(job.details.testResults.passedTests !== undefined) {
+                                    <strong>{{ job.details.testResults.passedTests }}</strong> OK
+                                  }
+                                  @if(job.details.testResults.failedTests !== undefined) {
+                                    <strong>{{ job.details.testResults.failedTests }}</strong> KO
+                                  }
+                                </p>
+                              }
+                            </div>
+                          }
+                        </ng-template>
+                        <div class="job" [mtxTooltip]="stepDetailsTpl" mtxTooltipPositionAtOrigin=true [routerLink]="['/projects', project.id]">
+                          <mat-icon [class]="getStepStatusClass(job.status)">
+                            {{ getStepIcon(job.status) }}
+                          </mat-icon>
+                        </div>
+                      }
+                    }
+                  } @else {
+                    <p>No pipeline available</p>
+                  }
+                </div>
+              </section>
+              <mat-divider/>
+        }
+      }
+    } @else {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+  </mat-card-content>
+</mat-card>

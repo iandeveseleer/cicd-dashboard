@@ -1,0 +1,55 @@
+section {
+  display: flex;
+  justify-content: inherit;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.project-name {
+  display: flex;
+  min-width: 128px;
+  align-items: center;
+}
+
+.jobs {
+  display: flex;
+}
+
+.job {
+  cursor: pointer;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.job-name {
+  margin-bottom: 0 !important;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
+}
+
+.job-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  p {
+    margin: 0;
+  }
+}
+
+.project-name a,
+.job a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.project-name:hover a,
+.job:hover a {
+  text-decoration: underline;
+}

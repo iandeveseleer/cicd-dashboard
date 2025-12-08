@@ -1,0 +1,8 @@
+@use "@angular/material" as mat;
+@use "../../functions" as functions;
+
+@mixin theme($theme) {
+  @include mat.table-overrides((
+    row-item-outline-color: var(--mat-table-background-color)
+  ))
+}

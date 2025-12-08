@@ -1,0 +1,60 @@
+@if(project) {
+  <a routerLink="/" mat-button>Back to list</a>
+  <mat-card class="project">
+    <mat-card-header class="project-header">
+      <mat-card-title>
+        <div matBadge="v{{ project.versions?.[0]?.version }}" matBadgeOverlap="false">
+          {{ project.name }}
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="project-details">
+      <div class="link-buttons">
+        <a mat-stroked-button href="{{ project.repositoryUrl }}" target="_blank">
+          <mat-icon>link</mat-icon>
+          Git Repository
+        </a>
+      </div>
+
+      <div class="jobs">
+        @if(project.versions?.[0]?.pipelines) {
+          @if(project.versions?.[0]?.pipelines?.[0]?.jobs) {
+            @for(job of project.versions?.[0]?.pipelines?.[0]?.jobs; track job.id) {
+              <mat-card class="job" [class]="getStepStatusClass(job.status)">
+                <mat-card-subtitle class="job-name">
+                  {{ job.name }}
+                </mat-card-subtitle>
+                <mat-card-content class="job-content">
+                  @if (job.details) {
+                    <div class="job-details">
+                      @if (job.details.codeQuality !== undefined) {
+                        @if (job.details.codeQuality.coverage !== undefined) {
+                          <p>Coverage: <strong>{{ job.details.codeQuality.coverage }}</strong></p>
+                        }
+                        @if (job.details.codeQuality.duplications !== undefined) {
+                          <p><strong>{{ job.details.codeQuality.duplications }}</strong> duplications</p>
+                        }
+                      }
+                      @if (job.details.testResults !== undefined) {
+                        <p>Tests:
+                          @if(job.details.testResults.passedTests !== undefined) {
+                            <strong>{{ job.details.testResults.passedTests }}</strong> OK
+                          }
+                          @if(job.details.testResults.failedTests !== undefined) {
+                            <strong>{{ job.details.testResults.failedTests }}</strong> KO
+                          }
+                        </p>
+                      }
+                    </div>
+                  }
+                </mat-card-content>
+              </mat-card>
+            }
+          }
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}

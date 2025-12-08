@@ -1,0 +1,55 @@
+@use '@angular/material' as mat;
+@use '@ng-matero/extensions' as mtx;
+@use 'sass:map';
+@use 'sass:color';
+@use 'functions' as functions;
+@use 'theme' as m3-theme;
+@use 'app/global-view/global-view.theme';
+
+/**
+    Icons to use in the project
+    steppers => Pipeline
+    folder_code => Project
+    play_circle => Run
+    cancel => KO/Error
+    remove_circle => Canceled/Disabled
+    check_circle => Success
+    pending => In Progress
+    info => Warning
+ */
+
+@include mat.core();
+
+$theme: m3-theme.$light-theme;
+$dark-theme: m3-theme.$dark-theme;
+
+:root {
+  @include mat.all-component-themes($theme);
+  @include mtx.all-component-themes($theme);
+  @include global-view.theme($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+
+  //@media (prefers-color-scheme: dark) {
+  //  @include mat.all-component-colors($dark-theme);
+  //  @include global-view.theme($theme);
+  //  @include mat.color-variants-backwards-compatibility($dark-theme);
+  //}
+
+  --mat-toolbar-container-background-color: #{functions.get-palette-color(mat.$cyan-palette, 50)};
+  --mat-toolbar-container-text-color: white;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@include functions.status-styles('info', mat.$blue-palette, 60);
+@include functions.status-styles('success', mat.$green-palette, 60);
+@include functions.status-styles('error', mat.$red-palette, 60);
+@include functions.status-styles('warning', mat.$orange-palette, 60);
+@include functions.status-styles('disabled', mat.$m2-grey-palette, 600);

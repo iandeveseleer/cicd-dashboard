@@ -1,0 +1,55 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+
+@keyframes couleur-mouvement {
+  to {
+    background-position: 100% center;
+  }
+}
+
+@mixin status-styles($status, $color, $hue) {
+  :root {
+    --#{$status}: #{get-palette-color($color, $hue)};
+  }
+
+  .#{$status} {
+    $status-color: var(--#{$status});
+
+    @include mat.card-overrides((
+      elevated-container-color: $status-color,
+      outlined-container-color: $status-color,
+    ));
+
+    @include mat.icon-overrides((
+      color: $status-color,
+    ));
+
+    &:not(.mat-mdc-card).ongoing {
+      background-image: linear-gradient(
+        90deg,
+        $status-color,
+        $status-color,
+        darken(get-palette-color($color, $hue), 15%),
+        $status-color,
+        $status-color
+      );
+
+      background-size: 200% auto;
+      color: transparent;
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      animation: couleur-mouvement 4s alternate infinite;
+    }
+  }
+}
+
+@function get-palette-color($palette, $hue) {
+  $result: map.get($palette, $hue);
+  @if not $result {
+    $supported-hues: map.keys($palette);
+    @error #{'Valid hues for'} $palette-name #{'are: #{$supported-hues}. Got:'} $hue;
+  }
+  @return $result;
+}
