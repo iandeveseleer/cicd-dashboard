@@ -13,11 +13,13 @@ section {
 
 .jobs {
   display: flex;
+  height: 64px;
 }
 
 .job {
   cursor: pointer;
-  width: 48px;
+  width: 64px;
+  height: 64px;
   display: flex;
   flex-direction: column;
   align-items: center;

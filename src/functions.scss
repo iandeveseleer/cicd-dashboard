@@ -1,12 +1,6 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
 
-@keyframes couleur-mouvement {
-  to {
-    background-position: 100% center;
-  }
-}
-
 @mixin status-styles($status, $color, $hue) {
   :root {
     --#{$status}: #{get-palette-color($color, $hue)};
@@ -25,23 +19,35 @@
     ));
 
     &:not(.mat-mdc-card).ongoing {
+      background-color: $status-color;
       background-image: linear-gradient(
-        90deg,
-        $status-color,
-        $status-color,
-        darken(get-palette-color($color, $hue), 15%),
-        $status-color,
-        $status-color
+          45deg,
+          rgba(255,255,255,.15) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(255,255,255,.15) 50%,
+          rgba(255,255,255,.15) 75%,
+          transparent 75%,
+          transparent
       );
+      transition: width 0.6s ease;
+      background-size: 16px 16px;
+      animation: progress-fill-stripes 1s linear infinite;
 
-      background-size: 200% auto;
-      color: transparent;
-
-      -webkit-background-clip: text;
-      background-clip: text;
-
-      animation: couleur-mouvement 4s alternate infinite;
+     -webkit-background-clip: text;
+     background-clip: text;
+     color: transparent;
     }
+  }
+}
+
+@keyframes progress-fill-stripes {
+  from {
+    background-position: 16px 0;
+  }
+
+  to {
+    background-position: 0 0;
   }
 }
 

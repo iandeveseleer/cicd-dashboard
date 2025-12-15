@@ -1,58 +1,62 @@
-@if(project) {
+@if(project && projectVersion) {
   <a routerLink="/" mat-button>Back to list</a>
   <mat-card class="project">
     <mat-card-header class="project-header">
       <mat-card-title>
-        <div matBadge="v{{ project.versions?.[0]?.version }}" matBadgeOverlap="false">
+        <div matBadge="v{{ projectVersion?.version }}" matBadgeColor="primary" matBadgeOverlap="false">
           {{ project.name }}
         </div>
       </mat-card-title>
     </mat-card-header>
     <mat-card-content class="project-details">
       <div class="link-buttons">
-        <a mat-stroked-button href="{{ project.repositoryUrl }}" target="_blank">
+        <a mat-stroked-button href="{{ project.repository_url }}" target="_blank">
           <mat-icon>link</mat-icon>
           Git Repository
         </a>
       </div>
+      <mat-accordion class="pipelines">
+          @if(projectVersion.pipelines !== undefined && projectVersion.pipelines.length > 0) {
+            @for(pipeline of projectVersion.pipelines; track pipeline.id; let i = $index) {
+              <ng-template #pipelineDetailsTpl>
+                @if(pipeline.jobs !== undefined && pipeline.jobs.length > 0) {
+                  <div class="jobs">
+                    @for(job of pipeline.jobs; track job.id) {
+                      <button matButton="outlined" class="job" matTooltip="Click to show details" [class]="getStepStatusClass(job.status)" (click)="openJobDialog(job)">
+                        <span class="job-name">{{ job.name }}</span>
+                        <mat-icon [class]="getStepStatusClass(job?.status)">
+                          {{ getStepIcon(job?.status) }}
+                        </mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+              </ng-template>
 
-      <div class="jobs">
-        @if(project.versions?.[0]?.pipelines) {
-          @if(project.versions?.[0]?.pipelines?.[0]?.jobs) {
-            @for(job of project.versions?.[0]?.pipelines?.[0]?.jobs; track job.id) {
-              <mat-card class="job" [class]="getStepStatusClass(job.status)">
-                <mat-card-subtitle class="job-name">
-                  {{ job.name }}
-                </mat-card-subtitle>
-                <mat-card-content class="job-content">
-                  @if (job.details) {
-                    <div class="job-details">
-                      @if (job.details.codeQuality !== undefined) {
-                        @if (job.details.codeQuality.coverage !== undefined) {
-                          <p>Coverage: <strong>{{ job.details.codeQuality.coverage }}</strong></p>
-                        }
-                        @if (job.details.codeQuality.duplications !== undefined) {
-                          <p><strong>{{ job.details.codeQuality.duplications }}</strong> duplications</p>
-                        }
-                      }
-                      @if (job.details.testResults !== undefined) {
-                        <p>Tests:
-                          @if(job.details.testResults.passedTests !== undefined) {
-                            <strong>{{ job.details.testResults.passedTests }}</strong> OK
-                          }
-                          @if(job.details.testResults.failedTests !== undefined) {
-                            <strong>{{ job.details.testResults.failedTests }}</strong> KO
-                          }
-                        </p>
-                      }
-                    </div>
-                  }
-                </mat-card-content>
-              </mat-card>
+              <mat-expansion-panel [expanded]="i === 0">
+                <mat-expansion-panel-header matTooltip="Click to show jobs">
+                  <mat-panel-title>
+                    <span class="pipeline-title">
+                      Pipeline {{ pipeline.id }}
+                      <mat-chip-row class="pipeline-sha-chip" color="primary" aria-label="SHA1">
+                        #{{ pipeline.sha1?.slice(0, 8) }}
+                      </mat-chip-row>
+                    </span>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <span class="pipeline-status" [class]="getStepStatusClass(pipeline.status)">
+                      <mat-icon [class]="getStepStatusClass(pipeline.status)">
+                        {{ getStepIcon(pipeline.status) }}
+                      </mat-icon>
+                      {{ getStepLabel(pipeline.status) }}
+                    </span>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                <ng-container [ngTemplateOutlet]="pipelineDetailsTpl"></ng-container>
+              </mat-expansion-panel>
             }
           }
-        }
-      </div>
+        </mat-accordion>
     </mat-card-content>
   </mat-card>
 } @else {

@@ -1,42 +1,69 @@
 import {Injectable} from '@angular/core';
-import {StepStatus} from '../model/model';
+import {Status} from '../enums/status.enum';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemingService {
-  getStepStatusClass(status: StepStatus): string {
+  getStepStatusClass(status: Status | undefined): string {
     switch (status) {
-      case StepStatus.SUCCESS:
-        return 'success';
-      case StepStatus.FAILED:
-        return 'error';
-      case StepStatus.BYPASS:
-        return 'warning';
-      case StepStatus.CANCELLED:
+      case Status.CREATED:
         return 'disabled';
-      case StepStatus.IN_PROGRESS:
+      case Status.SUCCESS:
+        return 'success';
+      case Status.FAILED:
+        return 'error';
+      case Status.BYPASSED:
+        return 'warning';
+      case Status.CANCELLED:
+      case Status.WAITING:
+        return 'disabled';
+      case Status.IN_PROGRESS:
         return 'info ongoing';
       default:
-        return '';
+        return 'disabled';
     }
   }
 
-  getStepIcon(status: StepStatus): string {
+  getStepIcon(status: Status | undefined): string {
     switch (status) {
-      case StepStatus.SUCCESS:
+      case Status.CREATED:
+        return 'circle';
+      case Status.SUCCESS:
         return 'check_circle';
-      case StepStatus.FAILED:
+      case Status.FAILED:
         return 'cancel';
-      case StepStatus.BYPASS:
+      case Status.BYPASSED:
         return 'info';
-      case StepStatus.IN_PROGRESS:
+      case Status.WAITING:
+      case Status.IN_PROGRESS:
         return 'pending';
-      case StepStatus.CANCELLED:
+      case Status.CANCELLED:
         return 'remove_circle';
       default:
-        return 'info';
+        return 'help';
+    }
+  }
+
+  getStepLabel(status: Status | undefined): string {
+    switch (status) {
+      case Status.CREATED:
+        return 'Created';
+      case Status.SUCCESS:
+        return 'Success';
+      case Status.FAILED:
+        return 'Failed';
+      case Status.BYPASSED:
+        return 'Ignored';
+      case Status.WAITING:
+        return 'Waiting';
+      case Status.IN_PROGRESS:
+        return 'In Progress';
+      case Status.CANCELLED:
+        return 'Canceled';
+      default:
+        return 'Unknown status';
     }
   }
 }

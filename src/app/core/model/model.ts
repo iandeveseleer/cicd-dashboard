@@ -1,63 +1,58 @@
+import {Status} from '../enums/status.enum';
+
 export interface ProjectDto {
-  id: string;
+  id: string | number;
   name: string;
-  repositoryUrl?: string;
-  versions?: ProjectVersionDto[];
+  repository_url: string;
+  repository_id: number;
+  versions: ProjectVersionDto[];
 }
 
 export interface ProjectVersionDto {
-  id: string;
+  id: string | number;
   version: number;
   team: {
-    id: string;
+    id: string | number;
     name: string;
-    channelUrl: string;
+    channel_url: string;
   };
-  projectId: string;
+  project_id: string | number;
   pipelines: PipelineDto[];
 }
 
 export interface PipelineDto {
-  id: string;
+  id: string | number;
   sha1: string;
-  status: string;
+  status: Status;
   url: string;
-  createdDate: string;
+  created_date: string;
   jobs: JobDto[];
 }
 
 export interface JobDto {
-  id: string;
+  id: string | number;
   name: string;
-  status: StepStatus;
-  startDate: number;
-  endDate: number;
+  status: Status;
+  start_date: string;
+  end_date: string;
+  logs_url: string;
   details: {
     log_url: string;
-    duration: number;
     links: { [key: string]: string };
-    testResults: {
-      totalTests: number;
-      passedTests: number;
-      failedTests: number;
-      skippedTests: number;
+    test_results: {
+      total_tests: number;
+      passed_tests: number;
+      failed_tests: number;
+      skipped_tests: number;
     };
-    codeQuality: {
+    code_quality: {
       coverage: number;
       duplications: number;
-      criticalIssues: number;
-      majorIssues: number;
-      minorIssues: number;
+      critical_issues: number;
+      major_issues: number;
+      minor_issues: number;
     };
   };
-}
-
-export enum StepStatus {
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-  BYPASS = 'BYPASS',
-  IN_PROGRESS = 'IN_PROGRESS',
-  CANCELLED = 'CANCELLED',
 }
 
 export interface ResourceLinks {
@@ -75,6 +70,8 @@ export interface EmbeddedCollection<T> {
 
 export interface CollectionLinks {
   self: { href: string };
+  next: { href: string };
+  prev: { href: string };
   profile: { href: string };
 }
 
@@ -89,4 +86,27 @@ export interface HalCollectionResponse<T> {
   _embedded: EmbeddedCollection<T>;
   _links: CollectionLinks;
   page: PageInfo;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  links: CollectionLinks;
+  page: PageInfo;
+}
+
+/**
+ * Convertit une réponse HAL en une structure paginée simple { items, links, page }.
+ * Supprime automatiquement la propriété interne `_links` de chaque entité embarquée.
+ */
+export function buildPaginatedResult<T>(response: HalCollectionResponse<T> | any, resourceName: string): PaginatedResult<T> {
+  const items: T[] = [];
+  if (response && response._embedded && response._embedded[resourceName]) {
+    for (const embedded of response._embedded[resourceName]) {
+      const { _links, ...entity } = embedded as any;
+      items.push(entity as T);
+    }
+  }
+  const links: CollectionLinks = (response && response._links) ? response._links : { self: { href: '' }, next: { href: '' }, prev: { href: '' }, profile: { href: '' } };
+  const page: PageInfo = (response && response.page) ? response.page : { number: 0, size: items.length, total_elements: items.length, total_pages: 1 };
+  return { items, links, page };
 }

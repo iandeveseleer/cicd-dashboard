@@ -5,66 +5,78 @@
         @for(version of project.versions ; track version.id) {
               <section>
                 <div class="project-name">
-                  @if (project?.repositoryUrl) {
-                    <a [href]="project.repositoryUrl" target="_blank" rel="noopener noreferrer" matTooltip="Go to repository">
+                  @if (project?.repository_url) {
+                    <a [href]="project.repository_url" target="_blank" rel="noopener noreferrer" mtxTooltip="Go to repository" mtxTooltipPositionAtOrigin=true>
                       <mat-icon>folder_code</mat-icon>
                     </a>
                   }
-                  <div matBadge="v{{ version.version}}" matBadgeOverlap="false">
-                    <a [routerLink]="['/projects', project.id, 'version', version.id]" matTooltip="Go to detailled view">{{ project.name }}</a>
+                  <div matBadge="v{{ version.version}}" matBadgeColor="primary" matBadgeOverlap="false">
+                    <a [routerLink]="['/projects', project.id, 'version', version.id]" mtxTooltip="Go to detailled view" mtxTooltipPositionAtOrigin=true>{{ project.name }}</a>
                   </div>
                 </div>
                 <div class="jobs">
-                  @if(version?.pipelines && version.pipelines.length > 0) {
-                    @if(version?.pipelines?.[0]?.jobs && version.pipelines[0].jobs.length > 0) {
-                      @for (job of version.pipelines[0].jobs; track $index) {
+                  @if(project.versions[0].pipelines !== undefined && project.versions[0].pipelines.length > 0) {
+                    @if(project.versions[0].pipelines[0].jobs !== undefined && project.versions[0].pipelines[0].jobs.length > 0) {
+                      @for (job of version.pipelines[0].jobs ; track $index) {
                         <ng-template #stepDetailsTpl>
-                          <strong>{{ job.name }}</strong>
-                          @if(job.startDate) {
-                            @if(job.endDate) {
-                              <p>Duration: <strong>{{ job.endDate | durationBetweenInMinutes: job.startDate }}</strong></p>
+                          <strong>{{ job?.name }}</strong>
+                          @if(job.start_date) {
+                            @if(job.end_date) {
+                              <p>Duration: <strong>{{ job.end_date | durationBetweenInMinutes: job.start_date }}</strong></p>
                             } @else {
                               <p>On going</p>
                             }
+                          } @else {
+                            <p>Pending</p>
                           }
-                          @if (job.details) {
+                          @if (job.details !== undefined) {
                             <div class="job-details">
-                              @if (job.details.codeQuality !== undefined) {
-                                @if (job.details.codeQuality.coverage !== undefined) {
-                                  <p>Coverage: <strong>{{ job.details.codeQuality.coverage }}</strong></p>
+                              @if (job.details.code_quality !== undefined) {
+                                @if (job.details.code_quality.coverage !== undefined) {
+                                  <p>Coverage: <strong>{{ job.details.code_quality.coverage }}</strong></p>
                                 }
-                                @if (job.details.codeQuality.duplications !== undefined) {
-                                  <p><strong>{{ job.details.codeQuality.duplications }}</strong> duplications</p>
+                                @if (job.details.code_quality.duplications !== undefined) {
+                                  <p><strong>{{ job.details.code_quality.duplications }}</strong> duplications</p>
                                 }
                               }
-                              @if (job.details.testResults !== undefined) {
+                              @if (job.details.test_results !== undefined) {
                                 <p>Tests:
-                                  @if(job.details.testResults.passedTests !== undefined) {
-                                    <strong>{{ job.details.testResults.passedTests }}</strong> OK
+                                  @if(job.details.test_results.passed_tests !== undefined) {
+                                    <strong>{{ job.details.test_results.passed_tests }}</strong> OK
                                   }
-                                  @if(job.details.testResults.failedTests !== undefined) {
-                                    <strong>{{ job.details.testResults.failedTests }}</strong> KO
+                                  @if(job.details.test_results.failed_tests !== undefined) {
+                                    <strong>{{ job.details.test_results.failed_tests }}</strong> KO
                                   }
                                 </p>
                               }
                             </div>
                           }
                         </ng-template>
-                        <div class="job" [mtxTooltip]="stepDetailsTpl" mtxTooltipPositionAtOrigin=true [routerLink]="['/projects', project.id]">
-                          <mat-icon [class]="getStepStatusClass(job.status)">
-                            {{ getStepIcon(job.status) }}
+                        <div class="job" [mtxTooltip]="stepDetailsTpl" mtxTooltipPositionAtOrigin=true [routerLink]="['/projects', project.id, 'version', version.id, 'job', job.id]" [class]="getStepStatusClass(job.status)">
+                          <p class="job-name">{{ job.name }}</p>
+                          <mat-icon [class]="getStepStatusClass(job?.status)">
+                            {{ getStepIcon(job?.status) }}
                           </mat-icon>
                         </div>
                       }
                     }
-                  } @else {
-                    <p>No pipeline available</p>
                   }
                 </div>
               </section>
               <mat-divider/>
         }
       }
+      <mat-paginator #paginator
+                     (page)="handlePageEvent($event)"
+                     [length]="length"
+                     [pageSize]="pageSize"
+                     [disabled]="disabled"
+                     [showFirstLastButtons]="showFirstLastButtons"
+                     [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+                     [hidePageSize]="hidePageSize"
+                     [pageIndex]="pageIndex"
+                     aria-label="Select page">
+      </mat-paginator>
     } @else {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
