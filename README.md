@@ -6,6 +6,10 @@ Modern web dashboard built with Angular 21, designed to monitor and manage Conti
 
 This is the frontend of a larger system designed to enhance the CI/CD experience. To make it fully functional, it needs to be integrated with a backend service that collects and processes CI/CD data. The backend API is under development and available **[here](https://github.com/iandeveseleer/cicd-dashboard-api)**
 
+![global_view.png](resources/global_view.png)
+![detailled_view.png](resources/detailled_view.png)
+![new_project.png](resources/new_project.png)
+
 ## 🚀 Features
 
 - **Real-time Pipeline Monitoring**: Automatic refresh every 15 seconds to track pipeline progress
