@@ -8,7 +8,8 @@ import {
   PaginatedResult,
   PipelineDto,
   ProjectDto,
-  ProjectVersionDto
+  ProjectVersionDto,
+  TeamDto
 } from '../model/model';
 
 @Injectable({
@@ -51,5 +52,32 @@ export class ApiService {
     return this.http.get<any>(`/api/pipelines/${pipelineId}/jobs?projection=${projection}`).pipe(
       map((resp: HalCollectionResponse<JobDto> | any) => buildPaginatedResult<JobDto>(resp, 'jobs'))
     );
+  }
+
+  getTeams(page = 0, size = 10, projection = 'full'): Observable<PaginatedResult<TeamDto>> {
+    return this.http.get<any>(`/api/teams`).pipe(
+      map((resp: HalCollectionResponse<TeamDto> | any) => buildPaginatedResult<TeamDto>(resp, 'teams'))
+    );
+  }
+
+  createProject(projectData: any): Observable<ProjectDto> {
+    return this.http.post<ProjectDto>(`/api/projects`, projectData);
+  }
+
+  createProjectVersion(projectVersionData: any): Observable<ProjectVersionDto> {
+    return this.http.post<ProjectVersionDto>(`/api/versions`, projectVersionData);
+  }
+
+  searchRepository(pattern: string): Observable<any> {
+    return this.http.get(`api/gitlab/projects/search?pattern=${pattern}`);
+  }
+
+  getProjectBranches(id: string | number): Observable<any> {
+    return this.http.get(`/api/gitlab/projects/branches?id=${id}`);
+  }
+
+  findVersionsByRepository(repositoryId: string | number): Observable<PaginatedResult<ProjectVersionDto>> {
+    return this.http.get(`/api/versions/search/findByProjectRepositoryId?repositoryId=${repositoryId}`)
+      .pipe(map((resp: HalCollectionResponse<ProjectVersionDto> | any) => buildPaginatedResult<ProjectVersionDto>(resp, 'versions')));
   }
 }

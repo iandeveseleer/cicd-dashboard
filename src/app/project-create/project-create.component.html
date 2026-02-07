@@ -1,0 +1,128 @@
+<div class="project-create-container">
+  <mat-card class="project-create-card">
+    <mat-card-header>
+      <mat-card-title>Add New Project</mat-card-title>
+      <mat-card-subtitle>Add a new project to track with the CI/CD Dashboard</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="project-form">
+        <div class="form-section">
+          <h3 class="form-section-title">Select Project</h3>
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Git project name</mat-label>
+            <input
+              matInput
+              id="name"
+              formControlName="name"
+              type="text"
+              [matAutocomplete]="auto"
+              (input)="onProjectSearch($any($event.target).value)"
+              placeholder="Type to search for a project"
+            />
+            <mat-icon matSuffix *ngIf="!searchingProject">search</mat-icon>
+            <mat-spinner *ngIf="searchingProject" matSuffix diameter="20" mode="indeterminate"></mat-spinner>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)">
+              <mat-option *ngFor="let option of projectOptions" [value]="option">
+                {{ option.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        @if (projectForm.get('repository_id')?.value) {
+          <div class="form-section">
+            <h3 class="form-section-title">Select Branch</h3>
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Branch</mat-label>
+              <mat-select formControlName="branch_id" id="branch_id">
+                @if (loadingBranches) {
+                  <mat-option disabled>
+                    <mat-spinner diameter="20" mode="indeterminate"></mat-spinner>
+                    Loading branches...
+                  </mat-option>
+                }
+                @for (branch of branches; track $index) {
+                  <mat-option [value]="branch.name" [disabled]="isBranchDisabled(branch.name)">
+                    <span>{{ branch.name }}</span>
+                    @if (isBranchDisabled(branch.name)) {
+                      <span class="already-linked">(already linked)</span>
+                    }
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (projectForm.get('branch_id')?.value) {
+          <div class="form-section">
+            <h3 class="form-section-title">Set Version</h3>
+            <mat-form-field appearance="fill" class="full-width" [class.mat-form-field-invalid]="projectForm.get('project_version_id')?.errors?.['versionAlreadyExists']">
+              <mat-label>Project version</mat-label>
+              <input
+                matInput
+                id="projectVersion"
+                formControlName="project_version_id"
+                type="text"
+                placeholder="e.g., 1.0.0"
+              />
+              @if (projectForm.get('project_version_id')?.errors?.['versionAlreadyExists']) {
+                <mat-error>This version is already existing for {{ projectForm.get('name')?.value }}</mat-error>
+              }
+              @if (projectForm.get('project_version_id')?.errors?.['required'] && projectForm.get('project_version_id')?.touched) {
+                <mat-error>Project version is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        }
+
+        @if (projectForm.get('project_version_id')?.value && !projectForm.get('project_version_id')?.errors) {
+          <div class="form-section">
+            <h3 class="form-section-title">Assign Team</h3>
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Team</mat-label>
+              <mat-select formControlName="team_id" id="team_id">
+                @if (loadingTeams) {
+                  <mat-option disabled>
+                    <mat-spinner diameter="20" mode="indeterminate"></mat-spinner>
+                    Loading teams...
+                  </mat-option>
+                }
+                @for (team of teams; track $index) {
+                  <mat-option [value]="team.id">
+                    {{ team.name }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+
+        <div class="form-actions">
+          <button
+            mat-stroked-button
+            color="primary"
+            type="submit"
+            [disabled]="projectForm.invalid"
+            class="submit-button"
+          >
+            <mat-icon>check_circle</mat-icon>
+            Create Project
+          </button>
+          <button
+            mat-stroked-button
+            type="reset"
+            (click)="resetForm()"
+            class="reset-button"
+          >
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

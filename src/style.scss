@@ -6,7 +6,7 @@
 @use 'theme' as m3-theme;
 @use 'app/global-view/global-view.theme';
 @use 'app/project-detail/project-detail.theme';
-
+@use 'app/project-create/project-create.theme';
 /**
     Icons to use in the project
     steppers => Pipeline
@@ -29,6 +29,7 @@ $dark-theme: m3-theme.$dark-theme;
   @include mtx.all-component-themes($theme);
   @include global-view.theme($theme);
   @include project-detail.theme($theme);
+  @include project-create.theme($theme);
   @include mat.color-variants-backwards-compatibility($theme);
 
   --mat-toolbar-container-background-color: #{functions.get-palette-color(mat.$cyan-palette, 50)};
@@ -41,6 +42,7 @@ $dark-theme: m3-theme.$dark-theme;
   @include mtx.all-component-themes($dark-theme);
   @include global-view.theme($dark-theme);
   @include project-detail.theme($dark-theme);
+  @include project-create.theme($dark-theme);
   @include mat.color-variants-backwards-compatibility($dark-theme);
 }
 
@@ -50,6 +52,7 @@ $dark-theme: m3-theme.$dark-theme;
   @include mtx.all-component-themes($theme);
   @include global-view.theme($theme);
   @include project-detail.theme($theme);
+  @include project-create.theme($theme);
   @include mat.color-variants-backwards-compatibility($theme);
 }
 
@@ -60,6 +63,7 @@ $dark-theme: m3-theme.$dark-theme;
     @include mtx.all-component-themes($dark-theme);
     @include global-view.theme($dark-theme);
     @include project-detail.theme($dark-theme);
+    @include project-create.theme($dark-theme);
     @include mat.color-variants-backwards-compatibility($dark-theme);
   }
 
@@ -68,6 +72,7 @@ $dark-theme: m3-theme.$dark-theme;
     @include mtx.all-component-themes($theme);
     @include global-view.theme($theme);
     @include project-detail.theme($theme);
+    @include project-create.theme($theme);
     @include mat.color-variants-backwards-compatibility($theme);
   }
 }
@@ -87,3 +92,17 @@ body {
 @include functions.status-styles('error', mat.$red-palette, 60);
 @include functions.status-styles('warning', mat.$orange-palette, 60);
 @include functions.status-styles('disabled', mat.$m2-grey-palette, 600);
+
+
+
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

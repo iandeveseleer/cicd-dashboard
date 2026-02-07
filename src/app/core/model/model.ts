@@ -29,6 +29,12 @@ export interface PipelineDto {
   jobs: JobDto[];
 }
 
+export interface TeamDto {
+  id: string | number;
+  channel_url: string;
+  name: string;
+}
+
 export interface JobDto {
   id: string | number;
   name: string;
