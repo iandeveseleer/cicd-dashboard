@@ -22,12 +22,17 @@
               (input)="onProjectSearch($any($event.target).value)"
               placeholder="Type to search for a project"
             />
-            <mat-icon matSuffix *ngIf="!searchingProject">search</mat-icon>
-            <mat-spinner *ngIf="searchingProject" matSuffix diameter="20" mode="indeterminate"></mat-spinner>
+            @if (!searchingProject) {
+              <mat-icon matSuffix>search</mat-icon>
+            } @else {
+              <mat-spinner matSuffix diameter="20" mode="indeterminate"></mat-spinner>
+            }
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProjectSelected($event.option.value)">
-              <mat-option *ngFor="let option of projectOptions" [value]="option">
-                {{ option.name }}
-              </mat-option>
+              @for (option of projectOptions; track $index) {
+                <mat-option [value]="option">
+                  {{ option.name }}
+                </mat-option>
+              }
             </mat-autocomplete>
           </mat-form-field>
         </div>
