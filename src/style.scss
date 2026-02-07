@@ -31,17 +31,47 @@ $dark-theme: m3-theme.$dark-theme;
   @include project-detail.theme($theme);
   @include mat.color-variants-backwards-compatibility($theme);
 
-  @media (prefers-color-scheme: dark) {
-    @include mat.all-component-themes($dark-theme);
-    @include mtx.all-component-themes($dark-theme);
-    @include global-view.theme($theme);
-    @include project-detail.theme($theme);
-    @include mat.color-variants-backwards-compatibility($dark-theme);
-  }
-
   --mat-toolbar-container-background-color: #{functions.get-palette-color(mat.$cyan-palette, 50)};
   --mat-toolbar-container-text-color: white;
 }
+
+// Dark theme - explicit
+.theme-dark {
+  @include mat.all-component-themes($dark-theme);
+  @include mtx.all-component-themes($dark-theme);
+  @include global-view.theme($dark-theme);
+  @include project-detail.theme($dark-theme);
+  @include mat.color-variants-backwards-compatibility($dark-theme);
+}
+
+// Light theme - explicit
+.theme-light {
+  @include mat.all-component-themes($theme);
+  @include mtx.all-component-themes($theme);
+  @include global-view.theme($theme);
+  @include project-detail.theme($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+}
+
+// Auto theme - follows system preference
+.theme-auto {
+  @media (prefers-color-scheme: dark) {
+    @include mat.all-component-themes($dark-theme);
+    @include mtx.all-component-themes($dark-theme);
+    @include global-view.theme($dark-theme);
+    @include project-detail.theme($dark-theme);
+    @include mat.color-variants-backwards-compatibility($dark-theme);
+  }
+
+  @media (prefers-color-scheme: light) {
+    @include mat.all-component-themes($theme);
+    @include mtx.all-component-themes($theme);
+    @include global-view.theme($theme);
+    @include project-detail.theme($theme);
+    @include mat.color-variants-backwards-compatibility($theme);
+  }
+}
+
 
 html,
 body {

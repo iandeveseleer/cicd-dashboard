@@ -22,12 +22,40 @@
                 @if(pipeline.jobs !== undefined && pipeline.jobs.length > 0) {
                   <div class="jobs">
                     @for(job of pipeline.jobs; track job.id) {
-                      <button matButton="outlined" class="job" matTooltip="Click to show details" [class]="getStepStatusClass(job.status)" (click)="openJobDialog(job)">
-                        <span class="job-name">{{ job.name }}</span>
-                        <mat-icon [class]="getStepStatusClass(job?.status)">
-                          {{ getStepIcon(job?.status) }}
-                        </mat-icon>
-                      </button>
+                      <div class="job-card" [attr.data-status]="getStepStatusClass(job.status)" matTooltip="Plus de détails" (click)="openJobDialog(job)">
+                        <div class="job-header">
+                          <span class="job-name">{{ job.name }}</span>
+                          <mat-icon [class]="getStepStatusClass(job?.status)">
+                            {{ getStepIcon(job?.status) }}
+                          </mat-icon>
+                        </div>
+                        <div class="job-info">
+                          @if(job.start_date) {
+                            @if(job.end_date) {
+                              <span class="job-duration">
+                                <mat-icon class="info-icon">schedule</mat-icon>
+                                {{ job.end_date | durationBetweenInMinutes: job.start_date }}
+                              </span>
+                            } @else {
+                              <span class="job-duration">
+                                <mat-icon class="info-icon">pending</mat-icon>
+                                En cours...
+                              </span>
+                            }
+                          } @else {
+                            <span class="job-duration">
+                              <mat-icon class="info-icon">hourglass_empty</mat-icon>
+                              En attente
+                            </span>
+                          }
+                          @if (job.details?.test_results) {
+                            <span class="job-tests">
+                              <mat-icon class="info-icon">check_circle</mat-icon>
+                              {{ job.details.test_results.passed_tests }}/{{ job.details.test_results.total_tests }}
+                            </span>
+                          }
+                        </div>
+                      </div>
                     }
                   </div>
                 }
@@ -38,14 +66,14 @@
                   <mat-panel-title>
                     <span class="pipeline-title">
                       Pipeline {{ pipeline.id }}
-                      <mat-chip-row class="pipeline-sha-chip" color="primary" aria-label="SHA1">
+                      <mat-chip-row class="pipeline-sha-chip" color="primary" aria-label="SHA1" (click)="$event.stopPropagation(); openPipeline(pipeline.url)">
                         #{{ pipeline.sha1?.slice(0, 8) }}
                       </mat-chip-row>
                     </span>
                   </mat-panel-title>
                   <mat-panel-description>
                     <span class="pipeline-status" [class]="getStepStatusClass(pipeline.status)">
-                      <mat-icon [class]="getStepStatusClass(pipeline.status)">
+                      <mat-icon class="pipeline-status-icon" [class]="getStepStatusClass(pipeline.status)">
                         {{ getStepIcon(pipeline.status) }}
                       </mat-icon>
                       {{ getStepLabel(pipeline.status) }}

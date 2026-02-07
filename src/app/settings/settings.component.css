@@ -1,0 +1,33 @@
+.settings-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
+
+.setting-section {
+  margin: 20px 0;
+}
+
+.setting-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+mat-button-toggle mat-icon {
+  margin-bottom: 2px;
+  margin-right: 8px;
+}
+
+.setting-description {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.5;
+}
+

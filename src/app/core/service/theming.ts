@@ -1,11 +1,46 @@
-import {Injectable} from '@angular/core';
+import {effect, Injectable, Renderer2, RendererFactory2, signal} from '@angular/core';
 import {Status} from '../enums/status.enum';
 
+export type ColorScheme = 'auto' | 'light' | 'dark';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemingService {
+  private renderer: Renderer2;
+  private readonly STORAGE_KEY = 'color-scheme';
+
+  colorScheme = signal<ColorScheme>(this.getInitialColorScheme());
+
+  constructor(private rendererFactory: RendererFactory2) {
+    this.renderer = this.rendererFactory.createRenderer(null, null);
+
+    effect(() => {
+      const scheme = this.colorScheme();
+      this.applyColorScheme(scheme);
+      localStorage.setItem(this.STORAGE_KEY, scheme);
+    });
+  }
+
+  private getInitialColorScheme(): ColorScheme {
+    const stored = localStorage.getItem(this.STORAGE_KEY) as ColorScheme;
+    return stored || 'auto';
+  }
+
+  private applyColorScheme(scheme: ColorScheme): void {
+    const htmlElement = document.documentElement;
+
+    this.renderer.removeClass(htmlElement, 'theme-light');
+    this.renderer.removeClass(htmlElement, 'theme-dark');
+    this.renderer.removeClass(htmlElement, 'theme-auto');
+
+    this.renderer.addClass(htmlElement, `theme-${scheme}`);
+  }
+
+  setColorScheme(scheme: ColorScheme): void {
+    this.colorScheme.set(scheme);
+  }
+
   getStepStatusClass(status: Status | undefined): string {
     switch (status) {
       case Status.CREATED:

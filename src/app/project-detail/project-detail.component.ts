@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../core/service/api';
 import {ThemingService} from '../core/service/theming';
@@ -22,11 +22,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
 
   private subscription!: Subscription;
+  private jobDialogOpened = false;
   projectVersion: ProjectVersionDto | undefined;
   project: ProjectDto | undefined;
   loaded: boolean = false;
 
-  readonly panelOpenState = signal(false);
 
   constructor(private route: ActivatedRoute) { }
 
@@ -45,10 +45,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
         this.project = response;
         this.projectVersion = response.versions?.find(v => v.id === Number(versionId));
         this.loaded = true;
-        if(jobId && this.projectVersion) {
+        if(jobId && this.projectVersion && !this.jobDialogOpened) {
           const job = this.projectVersion.pipelines?.flatMap(p => p.jobs).find(j => j.id === Number(jobId));
           if(job) {
             this.openJobDialog(job);
+            this.jobDialogOpened = true;
           }
         }
       });
@@ -76,5 +77,9 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       data: { job },
       width: '500px'
     });
+  }
+
+  openPipeline(url: string) {
+    window.open(url, '_blank');
   }
 }
